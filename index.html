@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>氣象圖像</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap; /* 確保不換行 */
+            gap: 0; /* 無間隙 */
+        }
+        img {
+            max-width: 33.33%; /* 每張圖片佔三分之一的寬度 */
+            height: auto;
+            margin: 0; /* 無間隙 */
+            cursor: pointer; /* 顯示為可點擊 */
+        }
+        #countdown {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        let countdown;
+        const updateInterval = 10 * 60; // 10分鐘的更新間隔（以秒為單位）
+        
+        const images = [
+            {
+                src: "https://www.cwa.gov.tw/Data/rainfall/QZJ_forPreview.jpg",
+                url: "https://www.cwa.gov.tw/V8/C/P/Rainfall/Rainfall_QZJ.html",
+                alt: "雨量圖像"
+            },
+            {
+                src: "https://www.cwa.gov.tw/Data/radar/CV1_TW_1000_forPreview.png",
+                url: "https://www.cwa.gov.tw/V8/C/W/OBS_Radar.html",
+                alt: "雷達圖像"
+            },
+            {
+                src: "https://www.cwa.gov.tw/Data/satellite/LCC_TRGB_1000/LCC_TRGB_1000_forPreview.jpg",
+                url: "https://www.cwa.gov.tw/V8/C/W/OBS_Sat.html",
+                alt: "衛星圖像"
+            }
+        ];
+
+        function updateImages() {
+            const imgElements = document.querySelectorAll("img");
+            imgElements.forEach((img, index) => {
+                img.src = images[index].src + "?t=" + new Date().getTime(); // 加上時間戳以防快取
+                img.alt = images[index].alt; // 設置alt屬性
+                img.onclick = () => window.open(images[index].url, "_blank"); // 點擊圖片打開網址
+            });
+            resetCountdown();
+        }
+
+        function resetCountdown() {
+            countdown = updateInterval; // 重設倒數秒數
+        }
+
+        function startCountdown() {
+            const countdownElement = document.getElementById("countdown");
+            const interval = setInterval(() => {
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                    updateImages(); // 更新圖片
+                } else {
+                    countdown--;
+                    countdownElement.textContent = `剩餘時間: ${Math.floor(countdown / 60)} 分 ${countdown % 60} 秒`;
+                }
+            }, 1000);
+        }
+
+        function immediateUpdate() {
+            updateImages();
+        }
+
+        window.onload = () => {
+            updateImages(); // 頁面加載時更新一次
+            resetCountdown(); // 重設倒數計時
+            startCountdown(); // 開始倒數計時
+        };
+    </script>
+</head>
+<body>
+    <div class="image-container">
+        <img src="" alt="雨量圖像">
+        <img src="" alt="雷達圖像">
+        <img src="" alt="衛星圖像">
+    </div>
+    <div id="countdown">剩餘時間: 10 分 0 秒</div>
+    <button onclick="immediateUpdate()">立即更新</button>
+</body>
+</html>
