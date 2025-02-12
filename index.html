@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>氣象圖像</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+        img {
+            max-width: 33.33%;
+            height: auto;
+            cursor: pointer;
+        }
+        .second-row {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* 靠上對齊 */
+            width: 100%;
+            margin-top: 0; /* 去除間距 */
+        }
+        .weather-container {
+            width: 50%;
+            text-align: center;
+        }
+        .iframe-container {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            transform: scale(0.7); /* 縮小 30% */
+            transform-origin: top center;
+        }
+        iframe {
+            width: 270px;
+            height: 420px;
+            border: none;
+        }
+        #last-updated {
+            font-size: 16px;
+            margin-top: 5px;
+        }
+    </style>
+    <script>
+        const images = [
+            {
+                src: "https://www.cwa.gov.tw/Data/rainfall/QZJ_forPreview.jpg",
+                url: "https://www.cwa.gov.tw/V8/C/P/Rainfall/Rainfall_QZJ.html",
+                alt: "雨量圖像"
+            },
+            {
+                src: "https://www.cwa.gov.tw/Data/radar/CV1_TW_1000_forPreview.png",
+                url: "https://www.cwa.gov.tw/V8/C/W/OBS_Radar.html",
+                alt: "雷達圖像"
+            },
+            {
+                src: "https://www.cwa.gov.tw/Data/satellite/LCC_TRGB_1000/LCC_TRGB_1000_forPreview.jpg",
+                url: "https://www.cwa.gov.tw/V8/C/W/OBS_Sat.html",
+                alt: "衛星圖像"
+            }
+        ];
+
+        function updateImages() {
+            document.querySelectorAll("img").forEach((img, index) => {
+                img.src = images[index].src + "?t=" + new Date().getTime();
+                img.alt = images[index].alt;
+                img.onclick = () => window.open(images[index].url, "_blank");
+            });
+            updateLastUpdated();
+        }
+
+        function updateLastUpdated() {
+            document.getElementById("last-updated").textContent = `最後更新時間: ${new Date().toLocaleString()}`;
+        }
+
+        window.onload = () => {
+            updateImages();
+            setInterval(updateImages, 10 * 60 * 1000);
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="image-container">
+            <img src="" alt="雨量圖像">
+            <img src="" alt="雷達圖像">
+            <img src="" alt="衛星圖像">
+        </div>
+        <div class="second-row">
+            <div class="weather-container">
+                <a class="weatherwidget-io" href="https://forecast7.com/zh-tw/22d63120d30/kaohsiung-city/" 
+                    data-label_1="高雄市" data-label_2="天氣" 
+                    data-font="微軟正黑體 (Microsoft JhengHei)" 
+                    data-icons="Climacons Animated" 
+                    data-mode="Current" data-days="3" 
+                    data-theme="white_leather">
+                    高雄市 天氣
+                </a>
+            </div>
+            <div class="iframe-container">
+                <iframe src="https://www.meteoblue.com/en/weather/widget/daily/kaohsiung-city_taiwan_1673820?geoloc=fixed&days=5&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&precipunit=MILLIMETER&coloured=coloured&pictoicon=1&maxtemperature=1&mintemperature=1&windspeed=0&windgust=0&winddirection=0&uv=1&humidity=0&precipitation=0&precipitationprobability=1&spot=1&pressure=0&layout=light"  
+                frameborder="0" scrolling="NO" allowtransparency="true" 
+                sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox">
+                </iframe>
+            </div>
+        </div>
+        <div id="last-updated">最後更新時間: </div>
+        <button onclick="updateImages()">立即更新</button>
+    </div>
+    <script>
+        !function(d,s,id){
+            var js,fjs=d.getElementsByTagName(s)[0];
+            if(!d.getElementById(id)){
+                js=d.createElement(s);
+                js.id=id;
+                js.src='https://weatherwidget.io/js/widget.min.js';
+                fjs.parentNode.insertBefore(js,fjs);
+            }
+        }(document,'script','weatherwidget-io-js');
+    </script>
+</body>
+</html>
